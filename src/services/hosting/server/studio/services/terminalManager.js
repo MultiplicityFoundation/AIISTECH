@@ -8,6 +8,15 @@ const sessions     = new Map();       // id → { pty, idleTimer }
 
 let nextId = 1;
 
+// Security note: `bash --restricted` (rbash) prevents `cd` outside cwd, PATH reassignment,
+// and I/O redirection. However rbash has known bypass vectors (e.g. BASH_ENV, SHELLOPTS,
+// command-completion hooks). Defense-in-depth measures applied here:
+//   1. Minimal PATH (/usr/local/bin:/usr/bin:/bin only)
+//   2. BASH_ENV and ENV unset to block profile/rc sourcing
+//   3. SHELLOPTS unset to prevent inheriting set options
+//   4. cwd locked to REPO_ROOT
+//   5. No parent-environment secrets (STUDIO_PASSWORD, SYNC_SECRET, etc.) passed to PTY
+
 function _resetIdle(id) {
   const session = sessions.get(id);
   if (!session) return;
@@ -32,6 +41,10 @@ function create() {
     PATH:                '/usr/local/bin:/usr/bin:/bin',
     LANG:                process.env.LANG || 'en_US.UTF-8',
     MULTIPLIC_REPO_PATH: REPO_ROOT,
+    // Explicitly block known rbash bypass vectors
+    BASH_ENV:            '',
+    ENV:                 '',
+    SHELLOPTS:           '',
   };
 
   const ptyProcess = pty.spawn('bash', ['--restricted', '--noprofile', '--norc'], {

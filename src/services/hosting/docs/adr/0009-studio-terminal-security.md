@@ -13,10 +13,14 @@ Studio includes an embedded terminal to allow developers to run `npm`, `git`, an
 - **`bash --restricted` (`rbash`)**: Prevents `cd` outside `REPO_ROOT`, prevents PATH modification, prevents I/O redirection, prevents sourcing arbitrary files
 - **`cwd: REPO_ROOT`**: Terminal spawns in the repository root; combined with `rbash` prevents directory escape
 - **Minimal `PATH`**: Only `/usr/local/bin:/usr/bin:/bin` — no user-local directories
-- **Clean environment**: Only `HOME`, `TERM`, `PATH`, `LANG`, and `MULTIPLIC_REPO_PATH` are passed to the PTY; no secrets from the parent environment
+- **Clean environment with bypass mitigation**: Only `HOME`, `TERM`, `PATH`, `LANG`, and `MULTIPLIC_REPO_PATH` are passed to the PTY; no secrets from the parent environment. `BASH_ENV`, `ENV`, and `SHELLOPTS` are explicitly set to empty strings to close known `rbash` bypass vectors
 - **Max 2 concurrent sessions**: Third create request returns 429
 - **30-minute idle timeout**: Inactive PTY sessions are automatically destroyed
 - **WebSocket transport**: PTY I/O flows over a WebSocket connection; resize commands are JSON-encoded and parsed separately from raw input
+
+## Known Limitations
+
+`rbash` is a defense-in-depth measure, not a complete security boundary. Known bypass vectors exist (e.g. invoking an editor that runs shell commands, using scripting languages available on PATH). The primary mitigation is that Studio is single-operator, password-protected, and intended for trusted developers. For production multi-tenant use, replace `rbash` with container isolation (see ADR-009 Phase 5 Cloud Tier notes).
 
 ## Consequences
 

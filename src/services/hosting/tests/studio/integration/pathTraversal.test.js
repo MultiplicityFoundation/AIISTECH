@@ -68,6 +68,7 @@ describe('Path traversal protection', () => {
   test('PUT /api/fs/write with path containing .. returns 403', async () => {
     const res = await agent
       .put('/_studio/api/fs/write')
+      .set('X-Studio-Request', '1')
       .send({ path: '../../outside.txt', content: 'bad' });
     expect(res.status).toBe(403);
   });

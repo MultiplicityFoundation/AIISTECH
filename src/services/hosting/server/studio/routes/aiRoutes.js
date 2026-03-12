@@ -12,6 +12,14 @@ const rateMap     = new Map();
 const RATE_WINDOW = 60 * 1000;
 const RATE_LIMIT  = 30;
 
+// Periodically purge expired rate-limit entries to prevent unbounded memory growth
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, rec] of rateMap) {
+    if (now > rec.reset) rateMap.delete(key);
+  }
+}, RATE_WINDOW).unref(); // .unref() so the interval does not prevent process exit
+
 function rateLimit(req, res, next) {
   const key = req.session.id;
   const now = Date.now();

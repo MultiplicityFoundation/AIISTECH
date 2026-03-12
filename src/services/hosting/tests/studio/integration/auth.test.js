@@ -62,6 +62,16 @@ describe('Studio auth integration', () => {
       .set('Accept', 'application/json');
     expect(res.status).toBe(401);
   });
+
+  test('Authenticated PUT /api/fs/write without CSRF header returns 403', async () => {
+    const agent = request.agent(app);
+    await agent.post('/_studio/auth/login').send({ password: TEST_PASSWORD });
+    const res = await agent
+      .put('/_studio/api/fs/write')
+      .send({ path: 'README.md', content: 'test' });
+    // CSRF check should reject without X-Studio-Request header
+    expect(res.status).toBe(403);
+  });
 });
 
 describe('Studio mount guard', () => {
