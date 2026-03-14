@@ -1,5 +1,3 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" style="height:64px;margin-right:32px"/>
-
 # This is an exciting architectural direction for AIISTECH! While the specific repositories at github.com/MultiplicityFoundation/Multiplic and github.com/RRussell11/AIISTECH-Website are not currently publicly indexed, I can speak directly to how Multiplic — as a Multiplicity Theory-based framework — is conceptually well-suited as a multi-domain hosting solution for AIISTECH. Here's a breakdown of how this integration makes sense:
 
 Why Multiplic as a Multi-Domain Host
